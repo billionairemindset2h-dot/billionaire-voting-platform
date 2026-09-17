@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Billionaire Voting Platform</title>
+
+  <title>Billionaire Mindset Voting</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -21,42 +24,46 @@
     header {
       background: #0b1f4d;
       color: white;
-      padding: 25px 20px;
+      padding: 28px 20px;
       text-align: center;
     }
 
     header h1 {
-      font-size: 28px;
+      font-size: 30px;
       margin-bottom: 8px;
     }
 
     header p {
-      font-size: 15px;
-      opacity: 0.9;
+      color: #d4af37;
+      font-size: 16px;
     }
 
     .hero {
       text-align: center;
-      padding: 50px 20px;
+      padding: 45px 20px 20px;
       background: white;
     }
 
     .hero h2 {
-      font-size: 32px;
-      margin-bottom: 15px;
       color: #0b1f4d;
+      font-size: 32px;
+      margin-bottom: 12px;
     }
 
     .hero p {
-      max-width: 600px;
+      max-width: 650px;
       margin: auto;
       line-height: 1.6;
       color: #555;
     }
 
+    .container {
+      max-width: 900px;
+      margin: 25px auto;
+      padding: 0 20px;
+    }
+
     .event-card {
-      max-width: 700px;
-      margin: 30px auto;
       background: white;
       padding: 30px;
       border-radius: 16px;
@@ -65,18 +72,84 @@
 
     .event-card h3 {
       color: #0b1f4d;
+      font-size: 25px;
       margin-bottom: 10px;
     }
 
-    .vote-button {
+    .event-description {
+      color: #666;
+      margin-bottom: 25px;
+    }
+
+    .contestant {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .contestant h4 {
+      color: #0b1f4d;
+      font-size: 21px;
+      margin-bottom: 6px;
+    }
+
+    .code {
       display: inline-block;
-      margin-top: 20px;
-      padding: 14px 25px;
-      background: #d4af37;
-      color: #111;
-      text-decoration: none;
-      border-radius: 8px;
+      background: #eef2ff;
+      color: #0b1f4d;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .votes {
+      color: #666;
+      margin-bottom: 15px;
+    }
+
+    .vote-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .vote-row label {
       font-weight: bold;
+    }
+
+    .vote-input {
+      width: 90px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      font-size: 16px;
+    }
+
+    .vote-button {
+      padding: 11px 20px;
+      background: #d4af37;
+      border: none;
+      border-radius: 7px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .vote-button:hover {
+      background: #c29d2f;
+    }
+
+    .loading,
+    .error,
+    .empty {
+      text-align: center;
+      padding: 25px;
+    }
+
+    .error {
+      color: #b91c1c;
     }
 
     footer {
@@ -85,39 +158,198 @@
       margin-top: 40px;
       background: #0b1f4d;
       color: white;
-      font-size: 14px;
     }
   </style>
 </head>
 
 <body>
 
-  <header>
-    <h1>BILLIONAIRE MINDSET</h1>
-    <p>Online Voting Platform</p>
-  </header>
+<header>
+  <h1>BILLIONAIRE MINDSET</h1>
+  <p>Online Voting Platform</p>
+</header>
 
-  <section class="hero">
-    <h2>Vote for Your Favourite Contestant</h2>
-    <p>
-      Welcome to the Billionaire Mindset Voting Platform.
-      Select your favourite contestant and cast your vote securely online.
-    </p>
+<section class="hero">
+  <h2>Vote for Your Favourite Contestant</h2>
+  <p>
+    Select a contestant and choose how many votes you would like to cast.
+  </p>
+</section>
 
-    <div class="event-card">
-      <h3>Billionaire Mindset Test Voting</h3>
-      <p>
-        This is our test event. Contestants and voting options
-        will appear here.
-      </p>
+<main class="container">
+  <div id="app" class="event-card">
+    <div class="loading">Loading voting information...</div>
+  </div>
+</main>
 
-      <a href="#" class="vote-button">VIEW CONTESTANTS</a>
-    </div>
-  </section>
+<footer>
+  &copy; 2026 Billionaire Mindset. All rights reserved.
+</footer>
 
-  <footer>
-    &copy; 2026 Billionaire Mindset. All rights reserved.
-  </footer>
+<script>
+  /*
+    SUPABASE CONNECTION
+    Paste your two SAFE values below.
+  */
+
+  const SUPABASE_URL = "https://imkcouvscfsjsmpoalda.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Velq6YVOUWpUPJDzxL9l7A_RPKJuQGi";
+
+  const { createClient } = supabase;
+
+  const db = createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  // Our test event created earlier
+  const EVENT_ID = "e244ef75-dafb-4ba2-8506-2dc033771b1c";
+
+  async function loadVotingPage() {
+    const app = document.getElementById("app");
+
+    try {
+      const { data: event, error: eventError } = await db
+        .from("events")
+        .select("*")
+        .eq("id", EVENT_ID)
+        .eq("is_active", true)
+        .single();
+
+      if (eventError) throw eventError;
+
+      const { data: contestants, error: contestantError } = await db
+        .from("contestants")
+        .select("*")
+        .eq("event_id", EVENT_ID)
+        .eq("is_active", true)
+        .order("vote_count", { ascending: false });
+
+      if (contestantError) throw contestantError;
+
+      let html = `
+        <h3>${escapeHtml(event.name)}</h3>
+
+        <p class="event-description">
+          ${escapeHtml(event.description || "")}
+        </p>
+
+        <p>
+          <strong>Price per vote:</strong>
+          ${escapeHtml(event.currency)} ${Number(event.vote_price).toFixed(2)}
+        </p>
+
+        <br>
+      `;
+
+      if (!contestants || contestants.length === 0) {
+        html += `
+          <div class="empty">
+            No contestants are available at the moment.
+          </div>
+        `;
+      } else {
+        contestants.forEach(contestant => {
+          html += `
+            <div class="contestant">
+
+              <h4>${escapeHtml(contestant.name)}</h4>
+
+              <span class="code">
+                Code: ${escapeHtml(contestant.code)}
+              </span>
+
+              <p class="votes">
+                Current votes:
+                <strong>${Number(contestant.vote_count).toLocaleString()}</strong>
+              </p>
+
+              <div class="vote-row">
+
+                <label for="votes-${contestant.id}">
+                  Number of votes:
+                </label>
+
+                <input
+                  id="votes-${contestant.id}"
+                  class="vote-input"
+                  type="number"
+                  min="1"
+                  value="1"
+                >
+
+                <button
+                  class="vote-button"
+                  onclick="prepareVote('${contestant.id}', '${escapeJs(contestant.name)}', ${Number(event.vote_price)}, '${escapeJs(event.currency)}')"
+                >
+                  VOTE NOW
+                </button>
+
+              </div>
+
+            </div>
+          `;
+        });
+      }
+
+      app.innerHTML = html;
+
+    } catch (error) {
+      console.error(error);
+
+      app.innerHTML = `
+        <div class="error">
+          <h3>Unable to load voting information</h3>
+          <p>Please try again later.</p>
+        </div>
+      `;
+    }
+  }
+
+  function prepareVote(contestantId, contestantName, price, currency) {
+    const input = document.getElementById(
+      "votes-" + contestantId
+    );
+
+    const votes = Number(input.value);
+
+    if (!Number.isInteger(votes) || votes < 1) {
+      alert("Please enter at least 1 vote.");
+      return;
+    }
+
+    const total = votes * price;
+
+    alert(
+      "Contestant: " +
+      contestantName +
+      "\\nVotes: " +
+      votes +
+      "\\nTotal: " +
+      currency +
+      " " +
+      total.toFixed(2) +
+      "\\n\\nPayment integration comes next."
+    );
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function escapeJs(value) {
+    return String(value)
+      .replaceAll("\\", "\\\\")
+      .replaceAll("'", "\\'");
+  }
+
+  loadVotingPage();
+</script>
 
 </body>
 </html>
