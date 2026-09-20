@@ -306,50 +306,59 @@
     }
   }
 
-  function prepareVote(contestantId, contestantName, price, currency) {
-    const input = document.getElementById(
-      "votes-" + contestantId
-    );
-
-    const votes = Number(input.value);
+  async function prepareVote(contestantId, contestantName, price, currency) {
+    const input = document.getElementById(`votes-${contestantId}`);
+    const votes = parseInt(input.value, 10);
 
     if (!Number.isInteger(votes) || votes < 1) {
-      alert("Please enter at least 1 vote.");
-      return;
+        alert("Please enter a valid number of votes.");
+        return;
     }
 
-    const total = votes * price;
-
-    alert(
-      "Contestant: " +
-      contestantName +
-      "\\nVotes: " +
-      votes +
-      "\\nTotal: " +
-      currency +
-      " " +
-      total.toFixed(2) +
-      "\\n\\nPayment integration comes next."
+    const email = prompt(
+        `Enter your email address to continue voting for ${contestantName}:`
     );
-  }
 
-  function escapeHtml(value) {
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
+    if (!email || !email.includes("@")) {
+        alert("Please enter a valid email address.");
+        return;
+    }
 
-  function escapeJs(value) {
-    return String(value)
-      .replaceAll("\\", "\\\\")
-      .replaceAll("'", "\\'");
-  }
 
-  loadVotingPage();
-</script>
+    try {
+        const { data, error } = await supabase.functions.invoke(
+            "initialize-paystack-payment",
+            {
+                body: {
+                    event_id: EVENT_ID,
+                    contestant_id: contestantId,
+                    email: email.trim(),
+                    votes: votes
+                }
+            }
+        );
 
-</body>
-</html>
+        if (error) {
+            console.error("Payment initialization error:", error);
+            throw new Error(error.message || "Unable to start payment.");
+        }
+
+        if (!data || !data.success || !data.authorization_url) {
+            throw new Error(
+                data?.message || "Unable to initialize payment with Paystack."
+            );
+        }
+
+        // Send the voter to the secure Paystack payment page
+        window.location.href = data.authorization_url;
+
+    } catch (error) {
+        console.error(error);
+
+        alert(
+            error.message ||
+            "Something went wrong while starting the payment. Please try again."
+        );
+
+    }
+}
