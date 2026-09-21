@@ -362,3 +362,49 @@
 
     }
 }
+async function handlePaymentReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const reference = params.get("reference");
+
+  if (!reference) {
+    return;
+  }
+
+  try {
+    const { data, error } = await supabase.functions.invoke(
+      "verify-paystack-payment",
+      {
+        body: {
+          reference: reference
+        }
+      }
+    );
+
+    if (error) {
+      throw error;
+    }
+
+    if (data && data.success) {
+      alert(
+        `Payment successful! ${data.votes || 0} vote(s) have been recorded.`
+      );
+    } else {
+      alert(
+        data?.message || "Payment could not be verified. Please contact the administrator."
+      );
+    }
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    alert(
+      "We could not verify your payment. Please contact the administrator."
+    );
+  }
+
+  window.history.replaceState(
+    {},
+    document.title,
+    window.location.pathname
+  );
+}
+
+handlePaymentReturn();
