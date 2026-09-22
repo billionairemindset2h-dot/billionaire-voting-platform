@@ -411,5 +411,7 @@ function escapeHtml(value) {
     .replace(/\r/g, "\\r")
     .replace(/\n/g, "\\n");
 }
-loadVotingPage();
-handlePaymentReturn();
+window.addEventListener("load", () => {
+  loadVotingPage();
+  handlePaymentReturn();
+});
