@@ -315,24 +315,14 @@
         return;
     }
 
-    const email = prompt(
-        `Enter your email address to continue voting for ${contestantName}:`
-    );
-
-    if (!email || !email.includes("@")) {
-        alert("Please enter a valid email address.");
-        return;
-    }
-
-
     try {
-        const { data, error } = await supabase.functions.invoke(
+        const { data, error } = await db.functions.invoke(
             "initialize-paystack-payment",
             {
                 body: {
                     event_id: EVENT_ID,
                     contestant_id: contestantId,
-                    email: email.trim(),
+                    email: `voter-${crypto.randomUUID()}@example.com`,
                     votes: votes
                 }
             }
@@ -371,7 +361,7 @@ async function handlePaymentReturn() {
   }
 
   try {
-    const { data, error } = await supabase.functions.invoke(
+    const { data, error } = await db.functions.invoke(
       "verify-paystack-payment",
       {
         body: {
