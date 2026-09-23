@@ -191,3 +191,52 @@ document.getElementById("forgotPasswordBtn").addEventListener("click", async () 
 
   showMessage("Password reset instructions have been sent to your email.", false);
 });
+db.auth.onAuthStateChange((event, session) => {
+  if (event === "PASSWORD_RECOVERY") {
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("dashboardSection").style.display = "none";
+    document.getElementById("resetPasswordSection").style.display = "block";
+  }
+});
+
+document.getElementById("resetPasswordBtn").addEventListener("click", async () => {
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+  const message = document.getElementById("resetMessage");
+
+  if (!newPassword || !confirmPassword) {
+    message.textContent = "Please enter and confirm your new password.";
+    message.className = "message error";
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    message.textContent = "The passwords do not match.";
+    message.className = "message error";
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    message.textContent = "Password must be at least 6 characters.";
+    message.className = "message error";
+    return;
+  }
+
+  const { error } = await db.auth.updateUser({
+    password: newPassword
+  });
+
+  if (error) {
+    message.textContent = "Password update failed: " + error.message;
+    message.className = "message error";
+    return;
+  }
+
+  message.textContent = "Password updated successfully. You can now log in.";
+  message.className = "message success";
+
+  setTimeout(() => {
+    document.getElementById("resetPasswordSection").style.display = "none";
+    document.getElementById("loginSection").style.display = "block";
+  }, 2000);
+});
