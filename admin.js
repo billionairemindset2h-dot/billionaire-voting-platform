@@ -181,7 +181,7 @@ document.getElementById("forgotPasswordBtn").addEventListener("click", async () 
   }
 
   const { error } = await db.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + window.location.pathname
+    redirectTo: "https://billionairemindset2h-dot.github.io/billionaire-voting-platform/admin.html"
   });
 
   if (error) {
