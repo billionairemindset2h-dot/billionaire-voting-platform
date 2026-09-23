@@ -172,3 +172,22 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
   await loadDashboard();
 });
+document.getElementById("forgotPasswordBtn").addEventListener("click", async () => {
+  const email = document.getElementById("email").value.trim();
+
+  if (!email) {
+    showMessage("Please enter your email address first.", true);
+    return;
+  }
+
+  const { error } = await db.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + window.location.pathname
+  });
+
+  if (error) {
+    showMessage("Password reset failed: " + error.message, true);
+    return;
+  }
+
+  showMessage("Password reset instructions have been sent to your email.", false);
+});
