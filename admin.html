@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billionaire Mindset - Admin Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #111827;
+    }
+
+    header {
+      background: #0b1f4d;
+      color: white;
+      padding: 22px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 24px;
+    }
+
+    header p {
+      margin-top: 5px;
+      color: #d6b45a;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .login-box,
+    .dashboard {
+      background: white;
+      border-radius: 14px;
+      padding: 30px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    .login-box {
+      max-width: 450px;
+      margin: 70px auto;
+    }
+
+    h2 {
+      color: #0b1f4d;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin: 14px 0 6px;
+      font-weight: bold;
+    }
+
+    input,
+    select,
+    button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 16px;
+    }
+
+    button {
+      background: #d6b45a;
+      color: #111827;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 18px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .logout-btn {
+      width: auto;
+      margin: 0;
+      padding: 9px 16px;
+      background: white;
+      color: #0b1f4d;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .stat-card {
+      background: #f8fafc;
+      border-left: 5px solid #d6b45a;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    .stat-card h3 {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .stat-card strong {
+      font-size: 28px;
+      color: #0b1f4d;
+    }
+
+    .section {
+      margin-top: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    th {
+      background: #0b1f4d;
+      color: white;
+    }
+
+    .action-btn {
+      width: auto;
+      margin: 0;
+      padding: 7px 12px;
+      font-size: 14px;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .success {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    @media (max-width: 800px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .login-box,
+      .dashboard {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div>
+      <h1>BILLIONAIRE MINDSET</h1>
+      <p>Voting Platform — Administration</p>
+    </div>
+
+    <button id="logoutBtn" class="logout-btn" style="display:none;">
+      Logout
+    </button>
+  </header>
+
+  <main class="container">
+
+    <section id="loginSection" class="login-box">
+      <h2>Administrator Login</h2>
+
+      <label for="email">Email</label>
+      <input
+        type="email"
+        id="email"
+        placeholder="Administrator email"
+      >
+
+      <label for="password">Password</label>
+      <input
+        type="password"
+        id="password"
+        placeholder="Password"
+      >
+
+      <button id="loginBtn">LOGIN</button>
+
+      <div id="loginMessage" class="message"></div>
+    </section>
+
+    <section id="dashboardSection" class="dashboard" style="display:none;">
+
+      <h2>Dashboard</h2>
+
+      <div class="stats">
+
+        <div class="stat-card">
+          <h3>Events</h3>
+          <strong id="eventCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <h3>Contestants</h3>
+          <strong id="contestantCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <h3>Total Votes</h3>
+          <strong id="voteCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <h3>Revenue</h3>
+          <strong id="revenue">GHS 0.00</strong>
+        </div>
+
+      </div>
+
+      <div class="section">
+        <h2>Event Management</h2>
+
+        <label for="eventSelect">Select Event</label>
+        <select id="eventSelect"></select>
+      </div>
+
+      <div class="section">
+        <h2>Contestant Management</h2>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Contestant</th>
+              <th>Code</th>
+              <th>Votes</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="contestantTable">
+          </tbody>
+        </table>
+      </div>
+
+    </section>
+
+  </main>
+
+  <script src="./admin.js"></script>
+
+</body>
+</html>
