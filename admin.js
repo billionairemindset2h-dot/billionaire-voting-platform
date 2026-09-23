@@ -126,7 +126,7 @@ async function editContestant(contestantId) {
 }
 
 function showMessage(message, isError) {
-  const box = document.getElementById("message");
+  const box = document.getElementById("loginMessage");
 
   box.textContent = message;
   box.className = isError ? "message error" : "message success";
