@@ -172,6 +172,48 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
 
   await loadDashboard();
 });
+document.getElementById("createEventBtn").addEventListener("click", async () => {
+  const name = document.getElementById("newEventName").value.trim();
+  const price = Number(document.getElementById("newEventPrice").value);
+  const message = document.getElementById("eventMessage");
+
+  if (!name) {
+    message.textContent = "Please enter an event name.";
+    message.className = "message error";
+    return;
+  }
+
+  if (!price || price <= 0) {
+    message.textContent = "Please enter a valid vote price.";
+    message.className = "message error";
+    return;
+  }
+
+  const { data, error } = await db
+    .from("events")
+    .insert([{
+      name: name,
+      vote_price: price,
+      currency: "GHS",
+      is_active: true
+    }])
+    .select()
+    .single();
+
+  if (error) {
+    message.textContent = "Could not create event: " + error.message;
+    message.className = "message error";
+    return;
+  }
+
+  message.textContent = "Event created successfully.";
+  message.className = "message success";
+
+  document.getElementById("newEventName").value = "";
+  document.getElementById("newEventPrice").value = "";
+
+  await loadDashboard();
+});
 document.getElementById("forgotPasswordBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
 
