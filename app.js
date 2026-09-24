@@ -180,9 +180,14 @@ async function handlePaymentReturn() {
 
     if (data && data.success) {
       await loadVotingPage();
-      alert(
-        `Payment successful! ${data.votes || 0} vote(s) have been recorded.`
-      );
+     const successMessage = document.createElement("div");
+successMessage.className = "payment-success";
+successMessage.innerHTML = `
+  <h3>Payment Successful!</h3>
+  <p>Thank you for voting for this contestant.</p>
+  <p><strong>${data.votes || 0} vote(s) have been successfully recorded.</strong></p>
+`;
+document.getElementById("app").prepend(successMessage);
     } else {
       alert(
         data?.message ||
