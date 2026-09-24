@@ -184,7 +184,13 @@ async function handlePaymentReturn() {
       await loadVotingPage();
      const successMessage = document.createElement("div");
 successMessage.className = "payment-success";
-      
+successMessage.style.padding = "12px 16px";
+successMessage.style.margin = "10px 0 18px";
+successMessage.style.borderRadius = "10px";
+successMessage.style.fontSize = "15px";
+successMessage.style.lineHeight = "1.4";  
+      successMessage.style.maxWidth = "600px";
+successMessage.style.boxSizing = "border-box";
 const recordedVotes = Number(sessionStorage.getItem("pendingVoteCount")) || Number(data.votes) || 0;
 const voteLabel = recordedVotes === 1 ? "vote" : "votes";
 const verb = recordedVotes === 1 ? "has" : "have";
