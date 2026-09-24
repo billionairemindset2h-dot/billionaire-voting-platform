@@ -214,6 +214,53 @@ document.getElementById("createEventBtn").addEventListener("click", async () => 
 
   await loadDashboard();
 });
+document.getElementById("createContestantBtn").addEventListener("click", async () => {
+  const name = document.getElementById("newContestantName").value.trim();
+  const code = document.getElementById("newContestantCode").value.trim();
+  const message = document.getElementById("contestantMessage");
+
+  if (!currentEventId) {
+    message.textContent = "Please select an event first.";
+    message.className = "message error";
+    return;
+  }
+
+  if (!name) {
+    message.textContent = "Please enter a contestant name.";
+    message.className = "message error";
+    return;
+  }
+
+  if (!code) {
+    message.textContent = "Please enter a contestant code.";
+    message.className = "message error";
+    return;
+  }
+
+  const { error } = await db
+    .from("contestants")
+    .insert([{
+      event_id: currentEventId,
+      name: name,
+      code: code,
+      vote_count: 0,
+      is_active: true
+    }]);
+
+  if (error) {
+    message.textContent = "Could not create contestant: " + error.message;
+    message.className = "message error";
+    return;
+  }
+
+  message.textContent = "Contestant created successfully.";
+  message.className = "message success";
+
+  document.getElementById("newContestantName").value = "";
+  document.getElementById("newContestantCode").value = "";
+
+  await loadEventData(currentEventId);
+});
 document.getElementById("forgotPasswordBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
 
