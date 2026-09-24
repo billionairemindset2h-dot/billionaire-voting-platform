@@ -116,11 +116,13 @@ async function prepareVote(contestantId, contestantName, price, currency) {
   const votes = parseInt(input.value, 10);
 
   if (!Number.isInteger(votes) || votes < 1) {
-    alert("Please enter a valid number of votes.");
-    return;
-  }
+  alert("Please enter a valid number of votes.");
+  return;
+}
 
-  try {
+sessionStorage.setItem("pendingVoteCount", String(votes));
+
+try {
     const { data, error } = await db.functions.invoke(
       "initialize-paystack-payment",
       {
@@ -185,9 +187,13 @@ successMessage.className = "payment-success";
 successMessage.innerHTML = `
   <h3>Payment Successful!</h3>
   <p>Thank you for voting for this contestant.</p>
-  <p><strong>${data.votes || 0} vote(s) have been successfully recorded.</strong></p>
+<p><strong>${sessionStorage.getItem("pendingVoteCount") || data.votes || 0} vote(s) have been successfully recorded.</strong></p>
 `;
 document.getElementById("app").prepend(successMessage);
+      
+      setTimeout(() => {
+  successMessage.remove();
+}, 10000);
     } else {
       alert(
         data?.message ||
