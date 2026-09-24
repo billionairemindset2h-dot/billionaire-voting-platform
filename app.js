@@ -214,11 +214,14 @@ document.getElementById("app").prepend(successMessage);
     );
   }
 
-  window.history.replaceState(
-    {},
-    document.title,
-    window.location.pathname
-  );
+  const cleanUrl = new URL(window.location.href);
+cleanUrl.searchParams.delete("reference");
+
+window.history.replaceState(
+  {},
+  document.title,
+  cleanUrl.pathname + cleanUrl.search
+);
 }
 
 function escapeHtml(value) {
