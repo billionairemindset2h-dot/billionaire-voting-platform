@@ -179,6 +179,7 @@ async function handlePaymentReturn() {
     }
 
     if (data && data.success) {
+      await loadVotingPage();
       alert(
         `Payment successful! ${data.votes || 0} vote(s) have been recorded.`
       );
