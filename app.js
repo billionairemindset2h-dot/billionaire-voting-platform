@@ -184,10 +184,15 @@ async function handlePaymentReturn() {
       await loadVotingPage();
      const successMessage = document.createElement("div");
 successMessage.className = "payment-success";
-successMessage.innerHTML = `
+      
+const recordedVotes = Number(sessionStorage.getItem("pendingVoteCount")) || Number(data.votes) || 0;
+const voteLabel = recordedVotes === 1 ? "vote" : "votes";
+const verb = recordedVotes === 1 ? "has" : "have";
+      
+      successMessage.innerHTML = `
   <h3>Payment Successful!</h3>
   <p>Thank you for voting for this contestant.</p>
-<p><strong>${sessionStorage.getItem("pendingVoteCount") || data.votes || 0} vote(s) have been successfully recorded.</strong></p>
+<p><strong>${recordedVotes} ${voteLabel} ${verb} been successfully recorded.</strong></p> 
 `;
 document.getElementById("app").prepend(successMessage);
       
