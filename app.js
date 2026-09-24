@@ -8,7 +8,9 @@ const db = createClient(
   SUPABASE_PUBLISHABLE_KEY
 );
 
-const EVENT_ID = "e244ef75-dafb-4ba2-8506-2dc033771b1c";
+const EVENT_ID =
+  new URLSearchParams(window.location.search).get("event") ||
+  "e244ef75-dafb-4ba2-8506-2dc033771b1c";
 
 async function loadVotingPage() {
   const app = document.getElementById("app");
