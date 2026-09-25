@@ -121,7 +121,7 @@ async function prepareVote(contestantId, contestantName, price, currency) {
 }
 
 sessionStorage.setItem("pendingVoteCount", String(votes));
-
+sessionStorage.setItem("pendingContestantName", contestantName);
 try {
     const { data, error } = await db.functions.invoke(
       "initialize-paystack-payment",
@@ -192,12 +192,13 @@ successMessage.style.lineHeight = "1.4";
       successMessage.style.maxWidth = "600px";
 successMessage.style.boxSizing = "border-box";
 const recordedVotes = Number(sessionStorage.getItem("pendingVoteCount")) || Number(data.votes) || 0;
+      const recordedContestantName = sessionStorage.getItem("pendingContestantName") || "this contestant";
 const voteLabel = recordedVotes === 1 ? "vote" : "votes";
 const verb = recordedVotes === 1 ? "has" : "have";
       
       successMessage.innerHTML = `
   <h3>Payment Successful!</h3>
-  <p>Thank you for voting for this contestant.</p>
+ <p>Thank you for voting for ${recordedContestantName}, we are grateful.</p>
 <p><strong>${recordedVotes} ${voteLabel} ${verb} been successfully recorded.</strong></p> 
 `;
 document.getElementById("app").prepend(successMessage);
