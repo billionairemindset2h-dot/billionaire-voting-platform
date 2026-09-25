@@ -152,6 +152,24 @@ document
   });
 
 loadDashboard();
+document
+  .getElementById("copyVotingLinkBtn")
+  .addEventListener("click", async () => {
+    if (!currentEventId) {
+      showMessage("Please select an event first.", true);
+      return;
+    }
+
+    const votingLink =
+      `${window.location.origin}${window.location.pathname.replace("admin.html", "index.html")}?event=${currentEventId}`;
+
+    try {
+      await navigator.clipboard.writeText(votingLink);
+      showMessage("Voting link copied successfully.", false);
+    } catch (error) {
+      showMessage("Could not copy the voting link.", true);
+    }
+  });
 
 document.getElementById("loginBtn").addEventListener("click", async () => {
   const email = document.getElementById("email").value.trim();
