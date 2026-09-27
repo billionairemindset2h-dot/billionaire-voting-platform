@@ -11,7 +11,45 @@ const db = createClient(
 const EVENT_ID =
   new URLSearchParams(window.location.search).get("event") ||
   "e244ef75-dafb-4ba2-8506-2dc033771b1c";
+let countdownInterval = null;
 
+function startCountdown(endAt) {
+  const timer = document.getElementById("countdown-timer");
+  if (!timer || !endAt) return;
+
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+
+  const endTime = new Date(endAt).getTime();
+
+  const updateCountdown = () => {
+    const remaining = endTime - Date.now();
+
+    if (remaining <= 0) {
+      timer.textContent = "Voting has ended.";
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+      loadVotingPage();
+      return;
+    }
+
+    const totalSeconds = Math.floor(remaining / 1000);
+
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    timer.textContent =
+      `${days}d ${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  updateCountdown();
+
+  countdownInterval = setInterval(updateCountdown, 1000);
+}
 async function loadVotingPage() {
   const app = document.getElementById("app");
 
@@ -133,7 +171,9 @@ ${event.voting_end_at ? `
     }
 
     app.innerHTML = html;
-
+if (event.voting_end_at) {
+  startCountdown(event.voting_end_at);
+}
   } catch (error) {
     console.error(error);
 
