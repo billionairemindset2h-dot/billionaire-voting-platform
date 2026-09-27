@@ -292,6 +292,7 @@ document.getElementById("createEventBtn").addEventListener("click", async () => 
 document.getElementById("createContestantBtn").addEventListener("click", async () => {
   const name = document.getElementById("newContestantName").value.trim();
   const code = document.getElementById("newContestantCode").value.trim();
+  const photoUrl = document.getElementById("newContestantPhoto").value.trim();
   const message = document.getElementById("contestantMessage");
 
   if (!currentEventId) {
@@ -318,6 +319,7 @@ document.getElementById("createContestantBtn").addEventListener("click", async (
       event_id: currentEventId,
       name: name,
       code: code,
+      photo_url: photoUrl,
       vote_count: 0,
       is_active: true
     }]);
