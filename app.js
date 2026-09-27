@@ -111,6 +111,42 @@ ${event.voting_end_at ? `
     Voting ends in: <span id="countdown-timer">Loading...</span>
   </div>
 ` : ""}
+${event.registration_enabled ? `
+  <div
+    style="
+      margin: 15px 0;
+      padding: 15px;
+      border-radius: 10px;
+      background: #0b1f4d;
+      text-align: center;
+    "
+  >
+    <div style="color: white; font-weight: 700; margin-bottom: 10px;">
+      EVENT REGISTRATION
+    </div>
+
+    <div style="color: #d4af37; font-size: 18px; font-weight: 700; margin-bottom: 12px;">
+      Registration Fee: ${escapeHtml(event.currency)} ${Number(event.registration_price).toFixed(2)}
+    </div>
+
+    <button
+      type="button"
+      onclick="startRegistration()"
+      style="
+        background: #d4af37;
+        color: #0b1f4d;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+      "
+    >
+      REGISTER HERE
+    </button>
+  </div>
+` : ""}
       <br>
     `;
 
