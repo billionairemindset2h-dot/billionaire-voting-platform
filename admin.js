@@ -104,23 +104,32 @@ function renderContestants(contestants) {
 }
 
 async function editContestant(contestantId) {
-  const newCode = prompt(
-    "Enter the new contestant code:"
-  );
+  const newName = prompt("Enter the new contestant name:");
 
-  if (!newCode) return;
+  if (!newName || !newName.trim()) return;
+
+  const newCode = prompt("Enter the new contestant code:");
+
+  if (!newCode || !newCode.trim()) return;
+
+  const message = document.getElementById("contestantMessage");
 
   const { error } = await db
     .from("contestants")
-    .update({ code: newCode.trim() })
+    .update({
+      name: newName.trim(),
+      code: newCode.trim()
+    })
     .eq("id", contestantId);
 
   if (error) {
-    showMessage("Could not update contestant code: " + error.message, true);
+    message.textContent = "Could not update contestant: " + error.message;
+    message.className = "message error";
     return;
   }
 
-  showMessage("Contestant code updated successfully.", false);
+  message.textContent = "Contestant details updated successfully.";
+  message.className = "message success";
 
   await loadEventData(currentEventId);
 }
