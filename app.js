@@ -56,7 +56,23 @@ if (event.voting_end_at && new Date(event.voting_end_at) <= new Date()) {
         <strong>Price per vote:</strong>
         ${escapeHtml(event.currency)} ${Number(event.vote_price).toFixed(2)}
       </p>
-
+${event.voting_end_at ? `
+  <div
+    id="voting-countdown"
+    style="
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fff8e1;
+      border: 1px solid #d4af37;
+      text-align: center;
+      font-weight: 700;
+      color: #0b1f4d;
+    "
+  >
+    Voting ends in: <span id="countdown-timer">Loading...</span>
+  </div>
+` : ""}
       <br>
     `;
 
