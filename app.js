@@ -23,7 +23,9 @@ async function loadVotingPage() {
       .single();
 
     if (eventError) throw eventError;
-
+if (event.voting_end_at && new Date(event.voting_end_at) <= new Date()) {
+  event.is_active = false;
+}
     if (!event.is_active) {
   app.innerHTML = `
     <div class="error">
