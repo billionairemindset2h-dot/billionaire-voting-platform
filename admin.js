@@ -65,10 +65,18 @@ async function loadEventData(eventId) {
 
   const { data: event } = await db
     .from("events")
-    .select("vote_price, currency")
+    .select("vote_price, currency, is_active")
     .eq("id", eventId)
     .single();
+const votingButton = document.getElementById("toggleVotingBtn");
 
+if (votingButton) {
+  votingButton.textContent = event?.is_active
+    ? "VOTING OFFICIALLY OPENED"
+    : "VOTING OFFICIALLY CLOSED";
+
+  votingButton.dataset.active = String(event?.is_active);
+}
   const revenue = totalVotes * Number(event?.vote_price || 0);
 
   document.getElementById("revenue").textContent =
@@ -161,6 +169,46 @@ document
   });
 
 loadDashboard();
+document
+  .getElementById("toggleVotingBtn")
+  .addEventListener("click", async () => {
+    if (!currentEventId) {
+      showMessage("Please select an event first.", true);
+      return;
+    }
+
+    const button = document.getElementById("toggleVotingBtn");
+    const currentStatus = button.dataset.active === "true";
+    const newStatus = !currentStatus;
+
+    const { error } = await db
+      .from("events")
+      .update({ is_active: newStatus })
+      .eq("id", currentEventId);
+
+    if (error) {
+      showMessage("Could not change voting status: " + error.message, true);
+      return;
+    }
+
+    button.textContent = newStatus
+      ? "VOTING OFFICIALLY OPENED"
+      : "VOTING OFFICIALLY CLOSED";
+
+    button.dataset.active = String(newStatus);
+
+    const statusMessage = document.getElementById("votingStatusMessage");
+
+    if (statusMessage) {
+      statusMessage.textContent = newStatus
+        ? "VOTING OFFICIALLY OPENED"
+        : "VOTING OFFICIALLY CLOSED";
+
+      statusMessage.className = newStatus
+        ? "message success"
+        : "message";
+    }
+  });
 document
   .getElementById("copyVotingLinkBtn")
   .addEventListener("click", async () => {
