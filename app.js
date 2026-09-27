@@ -68,6 +68,14 @@ async function loadVotingPage() {
       contestants.forEach(contestant => {
         html += `
           <div class="contestant">
+          <div class="contestant-photo">
+  ${
+    contestant.photo_url
+      ? `<img src="${escapeHtml(contestant.photo_url)}" alt="${escapeHtml(contestant.name)}">`
+      : `<div class="photo-placeholder">CONTESTANT PHOTO</div>`
+  }
+</div>
+          
             <h4>${escapeHtml(contestant.name)}</h4>
 
             <span class="code">
