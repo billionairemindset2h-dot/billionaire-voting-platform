@@ -201,13 +201,13 @@ ${event.registration_end_at ? `
                 value="1"
               >
 
-              <button
-                class="vote-button"
-                onclick="prepareVote('${contestant.id}', '${escapeJs(contestant.name)}', ${Number(event.vote_price)}, '${escapeJs(event.currency)}')"
-              >
-                VOTE NOW
-              </button>
-
+             <button
+  class="vote-button"
+  ${votingClosed ? "disabled" : ""}
+  ${votingClosed ? "" : `onclick="prepareVote('${contestant.id}', '${escapeJs(contestant.name)}', ${Number(event.vote_price)}, '${escapeJs(event.currency)}')"` }
+>
+  ${votingClosed ? "VOTING CLOSED" : "VOTE NOW"}
+</button>
             </div>
           </div>
         `;
