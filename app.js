@@ -128,7 +128,23 @@ ${event.registration_enabled ? `
     <div style="color: #d4af37; font-size: 18px; font-weight: 700; margin-bottom: 12px;">
       Registration Fee: ${escapeHtml(event.currency)} ${Number(event.registration_price).toFixed(2)}
     </div>
-
+${event.registration_end_at ? `
+  <div
+    id="registration-countdown"
+    style="
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background: #fff8e1;
+      border: 1px solid #d4af37;
+      color: #0b1f4d;
+      font-weight: 700;
+      text-align: center;
+    "
+  >
+    Registration ends in: <span id="registration-countdown-timer">Loading...</span>
+  </div>
+` : ""}
     <button
       type="button"
       onclick="startRegistration()"
