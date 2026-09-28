@@ -64,15 +64,7 @@ async function loadVotingPage() {
 if (event.voting_end_at && new Date(event.voting_end_at) <= new Date()) {
   event.is_active = false;
 }
-    if (!event.is_active) {
-  app.innerHTML = `
-    <div class="error">
-      <h3>VOTING OFFICIALLY CLOSED</h3>
-      <p>Voting for this event is currently closed.</p>
-    </div>
-  `;
-  return;
-}
+ const votingClosed = !event.is_active;
     
     const { data: contestants, error: contestantError } = await db
       .from("contestants")
