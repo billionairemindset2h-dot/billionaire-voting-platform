@@ -31,7 +31,9 @@ function startCountdown(endAt) {
       timer.textContent = "Voting has ended.";
       clearInterval(countdownInterval);
       countdownInterval = null;
-      loadVotingPage();
+      if (!document.getElementById("registration-form")) {
+  loadVotingPage();
+}
       return;
     }
 
