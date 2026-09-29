@@ -371,6 +371,28 @@ function escapeJs(value) {
 async function startRegistration() {
   const app = document.getElementById("app");
 
+  const { data: event, error: eventError } = await db
+    .from("events")
+    .select("*")
+    .eq("id", EVENT_ID)
+    .single();
+
+  if (eventError || !event) {
+    alert("Unable to load event information.");
+    return;
+  }
+
+  if (
+    event.registration_end_at &&
+    new Date(event.registration_end_at) <= new Date()
+  ) {
+    alert("Registration for this event has ended.");
+    return;
+  }
+
+  const eventCurrency = event.currency || "GHS";
+  const eventRegistrationPrice = event.registration_price || 0;
+
   app.innerHTML = `
     <div style="
       max-width: 600px;
