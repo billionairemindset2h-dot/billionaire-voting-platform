@@ -367,6 +367,10 @@ function escapeJs(value) {
     .replace(/\n/g, "\\n");
 }
 
+
+function startRegistration() {
+  alert("Registration form will open here.");
+}
 window.addEventListener("load", () => {
   loadVotingPage();
   handlePaymentReturn();
