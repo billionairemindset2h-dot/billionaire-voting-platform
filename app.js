@@ -215,7 +215,10 @@ ${event.registration_end_at ? `
         `;
       });
     }
-
+    
+if (document.getElementById("registration-form")) {
+  return;
+}
     app.innerHTML = html;
 if (event.voting_end_at) {
   startCountdown(event.voting_end_at);
