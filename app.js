@@ -539,11 +539,53 @@ async function startRegistration() {
   `;
 
   document
-    .getElementById("registration-form")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
-      alert("Registration form received. Payment connection will be added next.");
-    });
+  .getElementById("registration-form")
+  .addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const submitButton = e.target.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    submitButton.textContent = "PROCESSING...";
+
+    try {
+      const payload = {
+        event_id: EVENT_ID,
+        name: document.getElementById("reg-name").value.trim(),
+        age: Number(document.getElementById("reg-age").value),
+        sex: document.getElementById("reg-sex").value,
+        primary_contact: document.getElementById("reg-primary-contact").value.trim(),
+        alternative_contact: document.getElementById("reg-alternative-contact").value.trim(),
+        email: document.getElementById("reg-email").value.trim(),
+        photo_path: ""
+      };
+
+      const response = await fetch(
+        "https://imkcouvscfsjsmpoalda.supabase.co/functions/v1/initialize-registration-payment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Unable to start registration payment.");
+      }
+
+      window.location.href = result.authorization_url;
+
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Unable to start registration payment.");
+
+      submitButton.disabled = false;
+      submitButton.textContent = "PROCEED TO PAYMENT";
+    }
+  });
 }
 window.addEventListener("load", () => {
   loadVotingPage();
