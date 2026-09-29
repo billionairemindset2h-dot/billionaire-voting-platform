@@ -373,6 +373,11 @@ function escapeJs(value) {
 async function startRegistration() {
   const app = document.getElementById("app");
 
+    if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+  
   const { data: event, error: eventError } = await db
     .from("events")
     .select("*")
