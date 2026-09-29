@@ -368,8 +368,150 @@ function escapeJs(value) {
 }
 
 
-function startRegistration() {
-  alert("Registration form will open here.");
+async function startRegistration() {
+  const app = document.getElementById("app");
+
+  app.innerHTML = `
+    <div style="
+      max-width: 600px;
+      margin: 20px auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    ">
+
+      <h2 style="
+        text-align: center;
+        color: #0b1f4d;
+        margin-bottom: 8px;
+      ">
+        EVENT REGISTRATION
+      </h2>
+
+      <p style="
+        text-align: center;
+        color: #555;
+        margin-bottom: 20px;
+      ">
+        Registration Fee:
+        <strong>
+          ${escapeHtml(eventCurrency || "GHS")}
+          ${Number(eventRegistrationPrice || 20).toFixed(2)}
+        </strong>
+      </p>
+
+      <form id="registration-form">
+
+        <label>Full Name</label>
+        <input
+          type="text"
+          id="reg-name"
+          required
+          placeholder="Enter full name"
+          style="width:100%; padding:12px; margin:6px 0 15px; box-sizing:border-box;"
+        >
+
+        <label>Age</label>
+        <input
+          type="number"
+          id="reg-age"
+          required
+          min="1"
+          max="120"
+          placeholder="Enter age"
+          style="width:100%; padding:12px; margin:6px 0 15px; box-sizing:border-box;"
+        >
+
+        <label>Sex</label>
+        <select
+          id="reg-sex"
+          required
+          style="width:100%; padding:12px; margin:6px 0 15px; box-sizing:border-box;"
+        >
+          <option value="">Select sex</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+
+        <label>Primary Contact</label>
+        <input
+          type="tel"
+          id="reg-primary-contact"
+          required
+          placeholder="e.g. 0240000000"
+          style="width:100%; padding:12px; margin:6px 0 15px; box-sizing:border-box;"
+        >
+
+        <label>Alternative Contact</label>
+        <input
+          type="tel"
+          id="reg-alternative-contact"
+          placeholder="Optional"
+          style="width:100%; padding:12px; margin:6px 0 15px; box-sizing:border-box;"
+        >
+
+        <label>Email Address</label>
+        <input
+          type="email"
+          id="reg-email"
+          required
+          placeholder="Enter email address"
+          style="width:100%; padding:12px; margin:6px 0 15px; box-sizing:border-box;"
+        >
+
+        <label>Passport / Contestant Photo</label>
+        <input
+          type="file"
+          id="reg-photo"
+          accept="image/*"
+          style="width:100%; padding:12px; margin:6px 0 20px; box-sizing:border-box;"
+        >
+
+        <button
+          type="submit"
+          style="
+            width:100%;
+            background:#d4af37;
+            color:#0b1f4d;
+            border:none;
+            padding:14px;
+            border-radius:8px;
+            font-weight:700;
+            font-size:16px;
+            cursor:pointer;
+          "
+        >
+          PROCEED TO PAYMENT
+        </button>
+
+        <button
+          type="button"
+          onclick="loadVotingPage()"
+          style="
+            width:100%;
+            margin-top:10px;
+            background:#eee;
+            color:#333;
+            border:none;
+            padding:12px;
+            border-radius:8px;
+            cursor:pointer;
+          "
+        >
+          CANCEL
+        </button>
+
+      </form>
+    </div>
+  `;
+
+  document
+    .getElementById("registration-form")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+      alert("Registration form received. Payment connection will be added next.");
+    });
 }
 window.addEventListener("load", () => {
   loadVotingPage();
