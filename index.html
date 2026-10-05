@@ -70,6 +70,31 @@
       box-shadow: 0 5px 20px rgba(0,0,0,0.08);
     }
 
+    .event-picker {
+      background: white;
+      padding: 20px 24px;
+      margin-bottom: 18px;
+      border-radius: 14px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    .event-picker label {
+      display: block;
+      color: #0b1f4d;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .event-picker select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 16px;
+      background: white;
+      color: #111827;
+    }
+
     .event-card h3 {
       color: #0b1f4d;
       font-size: 25px;
@@ -239,6 +264,12 @@
 </section>
 
 <main class="container">
+  <div class="event-picker">
+    <label for="event-select">Choose an event</label>
+    <select id="event-select" disabled>
+      <option value="">Loading events...</option>
+    </select>
+  </div>
   <div id="app" class="event-card">
     <div class="loading">Loading voting information...</div>
   </div>
