@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Billionaire Mindset Voting</title>
+  <meta name="description" content="Explore Billionaire Mindset events, register as a contestant, and vote for your favourite participants.">
+  <meta name="theme-color" content="#101b32">
+  <title>Billionaire Mindset Events | Vote & Register</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js"></script>
 
@@ -246,24 +247,39 @@
   }
 } 
   </style>
+  <link rel="stylesheet" href="./site.css">
 </head>
 
 <body>
 
-<header>
-  <img src="./logo-gold.png"
-     alt="Billionaire Mindset Events"
-     style="max-width: 280px; width: 70%; height: auto;">
+<header class="site-header">
+  <a class="brand" href="./index.html" aria-label="Billionaire Mindset home">
+    <img src="./logo-gold.png" alt="Billionaire Mindset Events">
+  </a>
+  <nav class="site-nav" aria-label="Main navigation">
+    <a class="nav-link active" href="./index.html" aria-current="page">Home</a>
+    <a class="nav-link" href="#events">Events / Vote / Register</a>
+    <a class="nav-link" href="./about.html">About</a>
+    <a class="nav-link" href="./faq.html">Contact / FAQ</a>
+    <a class="nav-link nav-admin" href="./admin.html">Admin</a>
+  </nav>
 </header>
 
-<section class="hero">
-  <h2>Vote for Your Favourite Contestant</h2>
-  <p>
-    Select a contestant and choose how many votes you would like to cast.
-  </p>
+<section class="hero site-hero">
+  <div class="hero-inner">
+    <p class="eyebrow">BILLIONAIRE MINDSET EVENTS</p>
+    <h1>Every vote moves a dream forward.</h1>
+    <p>Explore current events, support your favourite contestants, or register when entries are open.</p>
+    <a class="button button-gold" href="#events">Explore events <span aria-hidden="true">↓</span></a>
+  </div>
 </section>
 
-<main class="container">
+<main class="container site-main" id="events">
+  <div class="section-heading">
+    <p class="eyebrow">TAKE PART</p>
+    <h2>Choose an event</h2>
+    <p>Voting and registration options are shown for each event when they are available.</p>
+  </div>
   <div class="event-picker">
     <label for="event-select">Choose an event</label>
     <select id="event-select" disabled>
@@ -276,6 +292,14 @@
 </main>
 
 <footer>
-  &copy; 2026 Billionaire Mindset. All rights reserved.
+  <div class="footer-inner">
+    <span>&copy; 2026 Billionaire Mindset Events</span>
+    <nav aria-label="Footer navigation">
+      <a href="#events">Events / Vote / Register</a>
+      <a href="./about.html">About</a>
+      <a href="./faq.html">Contact / FAQ</a>
+      <a href="./admin.html">Administrator</a>
+    </nav>
+  </div>
 </footer>
 
