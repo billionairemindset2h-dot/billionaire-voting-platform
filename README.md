@@ -9,6 +9,10 @@ Static public site for event discovery, contestant registration, and voting. It 
 - `faq.html` — support information and contact email.
 - `admin.html` — authenticated event administration.
 
+## Installing on a phone
+
+The public site is configured as an installable web app. After the site is published over HTTPS, Android users can use their browser's **Install app** or **Add to Home screen** option. On iPhone, open the site in Safari, tap **Share → Add to Home Screen**, enable **Open as Web App**, then tap **Add**. The installed app still needs an internet connection for live events, voting, registration, and payments. When offline, it shows a page explaining that connection is required.
+
 ## Deploying the site
 
 The Pages source is the `main` branch, `/ (root)`. Commit and push site files to `main`; GitHub Pages publishes them from the repository root. The public URL before the custom-domain switch is `https://billionairemindset2h-dot.github.io/billionaire-voting-platform/`.
