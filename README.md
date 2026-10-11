@@ -11,7 +11,7 @@ Static public site for event discovery, contestant registration, and voting. It 
 
 ## Installing on a phone
 
-The public site is configured as an installable web app. After the site is published over HTTPS, Android users can use their browser's **Install app** or **Add to Home screen** option. On iPhone, open the site in Safari, tap **Share → Add to Home Screen**, enable **Open as Web App**, then tap **Add**. The installed app still needs an internet connection for live events, voting, registration, and payments. When offline, it shows a page explaining that connection is required.
+The public site is configured as an installable web app, with an **Install app** button on the home page. Android users can tap it to open their browser's install prompt. On iPhone, the button shows the steps: open the site in Safari, tap **Share → Add to Home Screen**, enable **Open as Web App**, then tap **Add**. The installed app still needs an internet connection for live events, voting, registration, and payments. When offline, it shows a page explaining that connection is required.
 
 ## Deploying the site
 
