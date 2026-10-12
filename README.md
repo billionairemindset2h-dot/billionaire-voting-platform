@@ -31,6 +31,6 @@ DNS changes may take time to propagate. Validate both the apex domain and `www` 
 
 ## Backend source status
 
-`supabase/functions/verify-paystack-payment/index.ts` is the source for the currently updated registration-payment verification function, including the Resend registration email. The Supabase dashboard currently has four other deployed functions whose source is not included in this repository. Do not overwrite those functions from this repository until their deployed source has been retrieved and reviewed. Store all payment and email credentials in Supabase Edge Function Secrets; never put secret keys in browser code.
+`supabase/functions/initialize-registration-payment/index.ts` and `supabase/functions/verify-paystack-payment/index.ts` contain the reviewed sources for registration payment initialization and verification, including contestant photo storage and the Resend registration email. Three other deployed functions still have no source in this repository. Do not overwrite those functions until their deployed source has been retrieved and reviewed. Store all payment and email credentials in Supabase Edge Function Secrets; never put secret keys in browser code.
 
 The `supabase/migrations/` directory is a local record of database changes associated with event visibility, contestant photo storage, and registration payment/email status. Confirm the live schema and policies in Supabase before applying migrations to another project.

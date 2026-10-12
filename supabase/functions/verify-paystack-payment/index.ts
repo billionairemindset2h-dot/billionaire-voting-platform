@@ -45,6 +45,12 @@ async function sendRegistrationNotification(supabase: any, registration: any) {
       .eq("id", registration.event_id)
       .maybeSingle();
     const eventName = event?.name || registration.event_id;
+    const photoPath = String(registration.photo_path || "").trim();
+    const photoUrl = photoPath
+      ? photoPath.startsWith("http")
+        ? photoPath
+        : supabase.storage.from("contestant-photos").getPublicUrl(photoPath).data.publicUrl
+      : null;
     const details = [
       ["Event", eventName],
       ["Registration number", registration.registration_number],
@@ -54,7 +60,6 @@ async function sendRegistrationNotification(supabase: any, registration: any) {
       ["Primary contact", registration.primary_contact],
       ["Alternative contact", registration.alternative_contact],
       ["Applicant email", registration.email],
-      ["Photo path", registration.photo_path],
       ["Payment amount", `${registration.currency} ${registration.amount_paid}`],
       ["Payment reference", registration.payment_reference],
       ["Submitted", registration.created_at],
@@ -62,7 +67,11 @@ async function sendRegistrationNotification(supabase: any, registration: any) {
     const rows = details.map(([label, value]) =>
       `<tr><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">${escapeHtml(label)}</th><td style="padding:8px;border-bottom:1px solid #ddd">${escapeHtml(value || "—")}</td></tr>`
     ).join("");
-    const text = details.map(([label, value]) => `${label}: ${value || "—"}`).join("\n");
+    const photoRow = photoUrl
+      ? `<tr><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">Contestant photo</th><td style="padding:8px;border-bottom:1px solid #ddd"><a href="${escapeHtml(photoUrl)}">View or download photo</a></td></tr>`
+      : "";
+    const text = details.map(([label, value]) => `${label}: ${value || "—"}`).join("\n") +
+      (photoUrl ? `\nContestant photo: ${photoUrl}` : "");
 
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -75,8 +84,16 @@ async function sendRegistrationNotification(supabase: any, registration: any) {
         from,
         to: ["billionairemindset2h@gmail.com"],
         subject: `Paid event registration: ${registration.registration_number}`,
-        html: `<h2>New paid event registration</h2><table style="border-collapse:collapse;width:100%">${rows}</table>`,
+        html: `<h2>New paid event registration</h2>${photoUrl ? `<p><img src="cid:contestant-photo" alt="Contestant photo" style="display:block;max-width:320px;max-height:400px;object-fit:contain"></p>` : ""}<table style="border-collapse:collapse;width:100%">${rows}${photoRow}</table>`,
         text,
+        ...(photoUrl ? {
+          attachments: [{
+            path: photoUrl,
+            filename: "contestant-photo.jpg",
+            content_type: "image/jpeg",
+            content_id: "contestant-photo",
+          }],
+        } : {}),
       }),
     });
 

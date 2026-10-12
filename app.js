@@ -538,6 +538,85 @@ function formatEventDate(value) {
   }).format(date);
 }
 
+const MAX_REGISTRATION_PHOTO_BYTES = 15 * 1024 * 1024;
+const MAX_COMPRESSED_REGISTRATION_PHOTO_BYTES = 512 * 1024;
+
+async function prepareRegistrationPhoto(file) {
+  if (!file.type.startsWith("image/")) {
+    throw new Error("Choose an image file for the contestant photo.");
+  }
+  if (file.size > MAX_REGISTRATION_PHOTO_BYTES) {
+    throw new Error("Choose a photo smaller than 15 MB.");
+  }
+
+  let image;
+  if (window.createImageBitmap) {
+    image = await createImageBitmap(file);
+  } else {
+    image = await new Promise((resolve, reject) => {
+      const objectUrl = URL.createObjectURL(file);
+      const fallbackImage = new Image();
+      fallbackImage.onload = () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(fallbackImage);
+      };
+      fallbackImage.onerror = () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error("This image could not be opened. Try a JPEG or PNG photo."));
+      };
+      fallbackImage.src = objectUrl;
+    });
+  }
+  try {
+    if (!image.width || !image.height || image.width * image.height > 50000000) {
+      throw new Error("This photo is too large to process. Choose a smaller image.");
+    }
+
+    let scale = Math.min(1, 1200 / Math.max(image.width, image.height));
+    let quality = 0.82;
+    let blob;
+
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(image.width * scale));
+      canvas.height = Math.max(1, Math.round(image.height * scale));
+      const context = canvas.getContext("2d", { alpha: false });
+      if (!context) throw new Error("Photo compression is not supported by this browser.");
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+      blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(
+          result => result
+            ? resolve(result)
+            : reject(new Error("Could not compress this photo.")),
+          "image/jpeg",
+          quality
+        );
+      });
+      if (blob.size <= MAX_COMPRESSED_REGISTRATION_PHOTO_BYTES) break;
+      if (quality > 0.62) quality -= 0.07;
+      else {
+        scale *= 0.82;
+        quality = 0.78;
+      }
+    }
+
+    if (!blob || blob.size > MAX_COMPRESSED_REGISTRATION_PHOTO_BYTES) {
+      throw new Error("This photo could not be compressed enough. Choose another image.");
+    }
+
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    let binary = "";
+    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+      binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+    }
+    return btoa(binary);
+  } finally {
+    if (typeof image.close === "function") image.close();
+  }
+}
+
 
 async function startRegistration() {
   const app = document.getElementById("app");
@@ -754,7 +833,9 @@ async function startRegistration() {
         primary_contact: document.getElementById("reg-primary-contact").value.trim(),
         alternative_contact: document.getElementById("reg-alternative-contact").value.trim(),
         email: document.getElementById("reg-email").value.trim(),
-        photo_path: ""
+        photo_data: document.getElementById("reg-photo").files[0]
+          ? await prepareRegistrationPhoto(document.getElementById("reg-photo").files[0])
+          : null
       };
 
       const response = await fetch(
